@@ -1,0 +1,23 @@
+# Java class files
+*.class
+
+# Gradle files
+.gradle
+.m2
+/target
+*/target
+/build
+*/build
+
+# Netbeans project files
+nbproject/private/
+.nb-gradle
+
+## generic files
+*~
+*.lock
+*.DS_Store
+*.swp
+*.out
+/bin
+
