@@ -110,3 +110,7 @@ uploadArchives {
     }
   }
 }
+
+startScripts {
+  classpath = files('$APP_HOME/lib/*')
+}

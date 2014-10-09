@@ -2,7 +2,13 @@ package org.manifold;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.ServiceLoader;
 
 import org.apache.commons.cli.CommandLine;
@@ -44,6 +50,9 @@ public class MainEngine {
   private Options options;
 
   private boolean verbose;
+  public boolean isVerbose() {
+    return verbose;
+  }
 
   private void createOptionVerbose() {
     Option oVerbose = new Option("v", "verbose", false,
@@ -92,15 +101,21 @@ public class MainEngine {
     return null;
   }
 
-  private MainEngine(String args[]) {
+  private MainEngine(String args[]) throws MalformedURLException {
     setupLogging();
     this.initialOptions = new InitialOptions(args);
     this.arguments = initialOptions.getRemainingArguments()
         .toArray(new String[0]);
-    // TODO allow specification of extra search paths for frontends/backends
+    List<URL> urlList = new LinkedList<URL>();
+    for (String path : initialOptions.getExtraSearchURLs()) {
+      urlList.add(new URL(path));
+    }
+    URL[] urls = urlList.toArray(new URL[0]);
+    URLClassLoader urlLoader = new URLClassLoader(urls,
+        MainEngine.class.getClassLoader());
     // load all frontends and backends
-    frontendLoader = ServiceLoader.load(Frontend.class);
-    backendLoader = ServiceLoader.load(Backend.class);
+    frontendLoader = ServiceLoader.load(Frontend.class, urlLoader);
+    backendLoader = ServiceLoader.load(Backend.class, urlLoader);
   }
 
   public void run() throws Exception {
@@ -199,11 +214,18 @@ public class MainEngine {
   }
 
   public static void main(String args[]) {
+    MainEngine engine = null;
     try {
-      MainEngine engine = new MainEngine(args);
+      engine = new MainEngine(args);
       engine.run();
     } catch (Exception e) {
       log.error(e);
+      if (engine != null && engine.isVerbose()) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw);
+        log.error(sw.toString());
+      }
       System.exit(1);
     }
   }
