@@ -84,10 +84,10 @@ public class InitialOptions {
         String optionString = arg.substring(startIdx);
         if (optionString.equals("f")
             || optionString.equals("frontend")) {
-          if (i+1 >= args.length) {
+          if (i + 1 >= args.length) {
             throw new IllegalArgumentException(
                 "option " + arg + " requires a parameter");
-          } else if (args[i+1].startsWith("-")) {
+          } else if (args[i + 1].startsWith("-")) {
             throw new IllegalArgumentException(
                 "option " + arg + " requires a parameter");
           } else {
@@ -96,10 +96,10 @@ public class InitialOptions {
           }
         } else if (optionString.equals("b")
             || optionString.equals("backend")) {
-          if (i+1 >= args.length) {
+          if (i + 1 >= args.length) {
             throw new IllegalArgumentException(
                 "option " + arg + " requires a parameter");
-          } else if (args[i+1].startsWith("-")) {
+          } else if (args[i + 1].startsWith("-")) {
             throw new IllegalArgumentException(
                 "option " + arg + " requires a parameter");
           } else {
@@ -113,10 +113,10 @@ public class InitialOptions {
             || optionString.equals("compile-only")) {
           compile = true;
         } else if (optionString.equals("search-url")) {
-          if (i+1 >= args.length) {
+          if (i + 1 >= args.length) {
             throw new IllegalArgumentException(
                 "option " + arg + " requires a parameter");
-          } else if (args[i+1].startsWith("-")) {
+          } else if (args[i + 1].startsWith("-")) {
             throw new IllegalArgumentException(
                 "option " + arg + " requires a parameter");
           } else {
