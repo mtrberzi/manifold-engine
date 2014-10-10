@@ -36,7 +36,7 @@ dependencies {
   testCompile 'junit:junit:4.11'
   compile 'log4j:log4j:1.2.16'
   compile group: 'commons-cli', name: 'commons-cli', version: '1.2'
-  compile 'org.manifold:manifold-core:0.1.+'
+  compile 'org.manifold:manifold-core:0.6.+'
 }
 
 buildscript {
@@ -106,4 +106,8 @@ uploadArchives {
       repository(url: "file://localhost/var/www/releases")
     }
   }
+}
+
+startScripts {
+  classpath = files('$APP_HOME/lib/*')
 }
