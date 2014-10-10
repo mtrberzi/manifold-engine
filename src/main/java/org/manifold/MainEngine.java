@@ -159,6 +159,7 @@ public class MainEngine {
       }
     }
     // set up and parse the full argument list
+    options = new Options();
     createOptionDefinitions();
     if (useFrontend) {
       frontend.registerArguments(options);
@@ -219,7 +220,7 @@ public class MainEngine {
       engine = new MainEngine(args);
       engine.run();
     } catch (Exception e) {
-      log.error(e);
+      log.error(e.getMessage());
       if (engine != null && engine.isVerbose()) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
