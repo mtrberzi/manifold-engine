@@ -7,6 +7,8 @@ import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ServiceLoader;
@@ -108,7 +110,25 @@ public class MainEngine {
         .toArray(new String[0]);
     List<URL> urlList = new LinkedList<URL>();
     for (String path : initialOptions.getExtraSearchURLs()) {
-      urlList.add(new URL(path));
+      File file = new File(path);
+      if (!file.exists()) {
+        log.error("path not found: '" + path + "'");
+        return;
+      }
+      if (file.isDirectory()) {
+        List<File> files = new ArrayList<File>(Arrays.asList(file.listFiles()));
+        for (File subfile : files) {
+          if (subfile.isFile()) {
+            // if it is a JAR, add it to the URL
+            String name = subfile.getName();
+            if (name.endsWith(".jar")) {
+              urlList.add(subfile.toURI().toURL());
+            }
+          }
+        }
+      } else if (file.isFile()) {
+        urlList.add(file.toURI().toURL());
+      }
     }
     URL[] urls = urlList.toArray(new URL[0]);
     URLClassLoader urlLoader = new URLClassLoader(urls,

@@ -13,7 +13,7 @@ import com.google.common.collect.ImmutableList;
  * -b,--backend [backend-name]
  * -c,--compile-only (do not load a backend, emit a schematic)
  * -i,--intermediate (read a schematic, do not load a frontend)
- * --search-url [url]
+ * --search-path [path]
  */
 public class InitialOptions {
 
@@ -112,7 +112,7 @@ public class InitialOptions {
         } else if (optionString.equals("c")
             || optionString.equals("compile-only")) {
           compile = true;
-        } else if (optionString.equals("search-url")) {
+        } else if (optionString.equals("search-path")) {
           if (i + 1 >= args.length) {
             throw new IllegalArgumentException(
                 "option " + arg + " requires a parameter");
