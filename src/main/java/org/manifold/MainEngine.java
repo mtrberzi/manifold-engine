@@ -1,12 +1,17 @@
 package org.manifold;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -28,8 +33,6 @@ import org.manifold.compiler.middle.Schematic;
 import org.manifold.compiler.middle.serialization.SchematicDeserializer;
 import org.manifold.compiler.middle.serialization.SchematicSerializer;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Resources;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -38,7 +41,7 @@ import com.google.gson.JsonParser;
 
 public class MainEngine {
 
-  private static Logger log = LogManager.getLogger("DigitalBackend");
+  private static Logger log = LogManager.getLogger("MainEngine");
 
   private void setupLogging() {
     PatternLayout layout = new PatternLayout(
@@ -205,12 +208,23 @@ public class MainEngine {
       // if we're only using the intermediate,
       // deserialize the first argument and invoke backend
       // TODO strategy for handling multiple input files
-      URL schematicURL = new URL(cmd.getArgs()[0]);
-      JsonObject schematicJson = new JsonParser().parse(
-          Resources.toString(schematicURL, Charsets.UTF_8)).getAsJsonObject();
-      SchematicDeserializer deserial = new SchematicDeserializer();
-      Schematic schematic = deserial.deserialize(schematicJson);
-      backend.invokeBackend(schematic, cmd);
+      Path schematicPath = Paths.get(cmd.getArgs()[0]);
+      if (!(Files.isReadable(schematicPath))) {
+        log.error("cannot open '" + schematicPath.toString() + "': "
+            + "file is not readable");
+        return;
+      }
+      try (BufferedReader reader = Files.newBufferedReader(schematicPath)) {
+        JsonObject schematicJson = new JsonParser().parse(reader)
+            .getAsJsonObject();
+        SchematicDeserializer deserial = new SchematicDeserializer();
+        Schematic schematic = deserial.deserialize(schematicJson);
+        backend.invokeBackend(schematic, cmd);
+      } catch (IOException e) {
+        log.error("error reading '" + schematicPath.toString() + "': "
+            + e.getMessage());
+        return;
+      }
     } else if (initialOptions.compileOnly()) {
       // if we're only compiling,
       // invoke the frontend and serialize the schematic it provides
