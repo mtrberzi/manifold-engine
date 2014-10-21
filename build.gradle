@@ -11,7 +11,7 @@ targetCompatibility = 1.8
 
 group = "org.manifold"
 // name = "manifold-engine"
-version = '0.1.1-SNAPSHOT'
+version = '0.1.2-SNAPSHOT'
 
 mainClassName = "org.manifold.MainEngine"
 
@@ -85,7 +85,7 @@ checkstyle {
   configFile = new File(rootDir, "checkstyle.xml")
   ignoreFailures = false
   showViolations = true
-  toolVersion = "5.7"
+  toolVersion = "5.9"
 }
 
 task jenkinsTest {
@@ -107,5 +107,12 @@ uploadArchives {
 }
 
 startScripts {
-  classpath = files('$APP_HOME/lib/*')
+  // classpath = files('$APP_HOME/lib/*')
+  classpath += files('src/dist/PLACEHOLDER')
+  doLast {
+    def windowsScriptFile = file getWindowsScript()
+    def unixScriptFile = file getUnixScript()
+    windowsScriptFile.text = windowsScriptFile.text.replace('%APP_HOME%\\lib\\PLACEHOLDER', '%APP_HOME%\\lib\\*;')
+    unixScriptFile.text = unixScriptFile.text.replace('$APP_HOME/lib/PLACEHOLDER', '$APP_HOME/lib/*;')
+  }
 }
