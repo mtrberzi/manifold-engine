@@ -230,7 +230,9 @@ public class MainEngine {
       // invoke the frontend and serialize the schematic it provides
       Schematic schematic = frontend.invokeFrontend(cmd);
       JsonObject schematicJson = SchematicSerializer.serialize(schematic);
-      File schematicFile = null; // TODO file path
+      String schematicFilename = schematic.getName() + ".schematic";
+      Path schematicPath = Paths.get(schematicFilename);
+      File schematicFile = schematicPath.toFile();
       FileWriter fileWriter = new FileWriter(schematicFile);
       try {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
